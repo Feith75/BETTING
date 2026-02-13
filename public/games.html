@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games - Racing Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .game-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg-dark) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 40px var(--glow);
+    }
+
+    .game-banner {
+      height: 200px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .game-content {
+      padding: 1.5rem;
+    }
+
+    .game-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .game-description {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .game-stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-darker);
+      border-radius: 10px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .game-status {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .status-live {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid #22c55e;
+    }
+
+    .status-coming {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid #fbbf24;
+    }
+
+    .page-header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .page-title {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🎮 GAMES</div>
+      <nav style="display: flex; gap: 1rem; align-items: center;">
+        <a href="/" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏁 Racing</a>
+        <a href="liveGifting.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">⚽ Live Match</a>
+        <a href="prizes.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏆 Prizes</a>
+        <a href="subscribe.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">💎 Subscribe</a>
+      </nav>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">All Games</h1>
+      <p class="page-subtitle">Choose your game and start winning!</p>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="games-grid">
+      <!-- Car Racing -->
+      <div class="game-card" onclick="window.location.href='/'">
+        <div class="game-banner">🏎️</div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Car Racing</h2>
+          <p class="game-description">
+            Challenge other players or race against AI. Compete in thrilling head-to-head races across different tracks!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">PvP</span>
+              <span class="stat-label">Mode</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">3</span>
+              <span class="stat-label">Tracks</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Fast</span>
+              <span class="stat-label">Pace</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+
+      <!-- Live Football -->
+      <div class="game-card" onclick="window.location.href='liveGifting.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #22c55e, #16a34a);">⚽</div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Live Football</h2>
+          <p class="game-description">
+            Watch live matches, send gifts to support teams, and enjoy real-time football action with the community!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">Live</span>
+              <span class="stat-label">Matches</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Gifts</span>
+              <span class="stat-label">Support</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Social</span>
+              <span class="stat-label">Fun</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Watch Live</button>
+        </div>
+      </div>
+
+      <!-- Puzzle Challenge -->
+      <div class="game-card" onclick="window.location.href='puzzle.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🧩</div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Puzzle Challenge</h2>
+          <p class="game-description">
+            Crossword-style word puzzle! Fill in missing letters to complete words. Progress through 5 levels with increasing difficulty!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">5</span>
+              <span class="stat-label">Levels</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Grid</span>
+              <span class="stat-label">Layout</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Timed</span>
+              <span class="stat-label">Matches</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+
+      <!-- Trivia Quiz -->
+      <div class="game-card" onclick="window.location.href='trivia.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #ef4444, #dc2626);">❓</div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Trivia Challenge</h2>
+          <p class="game-description">
+            Couples, Bible, Math & Fun trivia! Plus bucket lists for travel, activities & fashion goals!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">7</span>
+              <span class="stat-label">Categories</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">PvP</span>
+              <span class="stat-label">Mode</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Lists</span>
+              <span class="stat-label">Bucket</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+
+      <!-- Tournaments -->
+      <div class="game-card" style="opacity: 0.7; cursor: not-allowed;">
+        <div class="game-banner" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🏆</div>
+        <div class="game-content">
+          <span class="game-status status-coming">⏳ COMING SOON</span>
+          <h2 class="game-title">Tournaments</h2>
+          <p class="game-description">
+            Compete in weekly skill tournaments. Climb the leaderboard and win exclusive prizes and rewards!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">Weekly</span>
+              <span class="stat-label">Events</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Big</span>
+              <span class="stat-label">Prizes</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Rank</span>
+              <span class="stat-label">System</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width: 100%;" disabled>Coming Soon</button>
+        </div>
+      </div>
+
+      <!-- Arcade Games -->
+      <div class="game-card" style="opacity: 0.7; cursor: not-allowed;">
+        <div class="game-banner" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🕹️</div>
+        <div class="game-content">
+          <span class="game-status status-coming">⏳ COMING SOON</span>
+          <h2 class="game-title">Arcade Games</h2>
+          <p class="game-description">
+            Classic arcade action! Play retro-style games, beat high scores, and challenge your reflexes!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">Retro</span>
+              <span class="stat-label">Style</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">High</span>
+              <span class="stat-label">Scores</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Fast</span>
+              <span class="stat-label">Action</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width: 100%;" disabled>Coming Soon</button>
+        </div>
+      </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.8rem; border-top: 1px solid #333; margin-top: 40px;">
+      <p>&copy; 2026 Racing Club. Skill-based gaming platform. Play for fun and prizes!</p>
+      <a href="legal.html" style="color: #888; text-decoration: none; margin: 0 10px;">Terms & Conditions</a>
+      <a href="#" style="color: #888; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+    </footer>
+  </div>
+</body>
+</html>

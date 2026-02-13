@@ -1,0 +1,10 @@
+package-lock.json
+node_modules/
+package.json
+TODO.md
+sportsDataService.js
+PROJECT_STATUS.md
+PROJECT_WALKTHROUGH.md
+
+betting.db
+error.log

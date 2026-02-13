@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Club - All Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Auto-Sliding Slideshow - 2 cards at a time */
+    .slideshow-container {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      position: relative;
+    }
+
+    .slideshow-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 20px;
+    }
+
+    .slide-group {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.6s ease-in-out;
+    }
+
+    .slide-group.active {
+      opacity: 1;
+      transform: translateX(0);
+      z-index: 1;
+    }
+
+    .game-slide {
+      width: 400px;
+      height: 400px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .game-slide:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-slide .game-banner {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-slide .game-content {
+      padding: 1.2rem;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+    }
+
+    .game-slide .game-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .game-slide .game-description {
+      color: var(--text-muted);
+      margin-bottom: auto;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .game-slide .btn {
+      padding: 0.7rem 1.2rem;
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+
+    .game-slide .game-status {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.7rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .slide-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .indicator.active {
+      background: var(--primary);
+      width: 30px;
+      border-radius: 6px;
+    }
+
+    /* Coming Soon Section - Circular Cards */
+    .coming-soon-section {
+      max-width: 1400px;
+      margin: 3rem auto 2rem;
+      padding: 0 2rem;
+    }
+
+    .coming-soon-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .coming-soon-grid {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .coming-soon-card {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, var(--surface), var(--bg-dark));
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+
+    .coming-soon-card:hover {
+      opacity: 1;
+      transform: scale(1.05);
+      border-color: var(--primary);
+    }
+
+    .coming-soon-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .coming-soon-card .game-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .coming-soon-card .game-description {
+      display: none;
+    }
+
+    .coming-soon-card .game-status {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 1px solid #fbbf24;
+    }
+
+    .games-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      perspective: 1500px;
+      min-height: 350px;
+      position: relative;
+    }
+
+    .game-card:not(.coming-soon) {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg-dark) 100%);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      cursor: pointer;
+      position: absolute;
+      animation: swapPositions 9s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    }
+
+    .game-card:not(.coming-soon) .btn {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.7rem;
+      width: 100%;
+    }
+
+    .game-card:not(.coming-soon):nth-child(1) {
+      animation-delay: 0s;
+      animation-name: swapPositions1;
+    }
+
+    .game-card:not(.coming-soon):nth-child(2) {
+      animation-delay: 0s;
+      animation-name: swapPositions2;
+    }
+
+    .game-card:not(.coming-soon):nth-child(3) {
+      animation-delay: 0s;
+      animation-name: swapPositions3;
+    }
+
+    .game-card:not(.coming-soon) .game-banner {
+      transition: height 1s ease-in-out;
+    }
+
+    @keyframes swapPositions1 {
+      /* Card 1: Starts center (230x230), moves right (200x200), then left (200x200), back to center */
+      0%, 30% {
+        width: 230px;
+        height: 230px;
+        transform: translateX(0) translateY(20px) translateZ(100px);
+        filter: blur(0px) brightness(1);
+        opacity: 1;
+        z-index: 10;
+      }
+      33.33%, 63.33% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      66.66%, 96.66% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(-240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      100% {
+        width: 230px;
+        height: 230px;
+        transform: translateX(0) translateY(20px) translateZ(100px);
+        filter: blur(0px) brightness(1);
+        opacity: 1;
+        z-index: 10;
+      }
+    }
+
+    @keyframes swapPositions2 {
+      /* Card 2: Starts right (200x200), moves left (200x200), then center (230x230) */
+      0%, 30% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      33.33%, 63.33% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(-240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      66.66%, 96.66% {
+        width: 230px;
+        height: 230px;
+        transform: translateX(0) translateY(20px) translateZ(100px);
+        filter: blur(0px) brightness(1);
+        opacity: 1;
+        z-index: 10;
+      }
+      100% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+    }
+
+    @keyframes swapPositions3 {
+      /* Card 3: Starts left (200x200), moves center (230x230), then right (200x200) */
+      0%, 30% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(-240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      33.33%, 63.33% {
+        width: 230px;
+        height: 230px;
+        transform: translateX(0) translateY(20px) translateZ(100px);
+        filter: blur(0px) brightness(1);
+        opacity: 1;
+        z-index: 10;
+      }
+      66.66%, 96.66% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+      100% {
+        width: 200px;
+        height: 200px;
+        transform: translateX(-240px) translateY(-50px) translateZ(-50px);
+        filter: blur(0.8px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+    }
+        width: 250px;
+        height: 400px;
+        transform: translateX(-350px) translateY(0) translateZ(-50px) scale(0.85);
+        filter: blur(0px) brightness(0.85);
+        opacity: 0.9;
+        z-index: 1;
+      }
+    }
+
+    .game-card:not(.coming-soon):hover {
+      transform: translateZ(120px) !important;
+      border-color: var(--primary);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 60px var(--glow) !important;
+      filter: brightness(1.3) blur(0px) !important;
+      z-index: 20 !important;
+      animation-play-state: paused;
+    }
+
+    .game-card:not(.coming-soon)::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .game-card:not(.coming-soon):hover::before {
+      opacity: 1;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    }
+
+    .game-banner {
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .game-content {
+      padding: 0.5rem;
+    }
+
+    .game-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+
+    .game-description {
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-size: 0.6rem;
+      line-height: 1.2;
+    }
+
+    .game-stats {
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 0.4rem;
+      padding: 0.3rem;
+      background: var(--bg-darker);
+      border-radius: 4px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.5rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .game-card.coming-soon {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0.7;
+      cursor: not-allowed;
+      margin: 0 auto;
+    }
+
+    .game-card.coming-soon:hover {
+      transform: scale(1.05);
+      opacity: 0.85;
+    }
+
+    .game-card.coming-soon .game-banner {
+      display: none;
+    }
+
+    .game-card.coming-soon .game-content {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .game-card.coming-soon .game-title {
+      font-size: 1.1rem;
+      margin: 0.5rem 0 0.3rem;
+    }
+
+    .game-card.coming-soon .game-description,
+    .game-card.coming-soon .game-stats,
+    .game-card.coming-soon .btn {
+      display: none;
+    }
+
+    .game-card.coming-soon .game-status {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .coming-soon-icon {
+      font-size: 3.5rem;
+    }
+
+    .coming-soon-section-wrapper {
+      margin-top: -1rem;
+      padding: 2rem;
+    }
+
+    .coming-soon-section-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: -1rem;
+    }
+
+    .coming-soon-grid-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .game-status {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .status-live {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid #22c55e;
+    }
+
+    .status-coming {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid #fbbf24;
+    }
+
+    .page-header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .page-title {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Football Preview Animation */
+    .football-preview {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-player {
+      position: absolute;
+      font-size: 2rem;
+      animation: playerMove 3s infinite;
+    }
+
+    .player-1 {
+      left: 20%;
+      animation-delay: 0s;
+    }
+
+    .player-2 {
+      right: 20%;
+      animation-delay: 1.5s;
+    }
+
+    .mini-ball {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: ballPass 3s infinite;
+    }
+
+    @keyframes playerMove {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes ballPass {
+      0% { left: 20%; opacity: 1; }
+      45% { left: 50%; opacity: 1; }
+      50% { left: 50%; opacity: 0; }
+      55% { left: 50%; opacity: 1; }
+      100% { left: 80%; opacity: 1; }
+    }
+
+    /* Puzzle Preview Animation */
+    .puzzle-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .puzzle-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .puzzle-box {
+      width: 35px;
+      height: 35px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #fff;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .puzzle-box.empty {
+      background: rgba(255, 255, 255, 0.3);
+      animation: puzzleFill 4s infinite;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.8rem;
+    }
+
+    .puzzle-box.filled {
+      animation: puzzlePop 0.5s ease;
+    }
+
+    @keyframes puzzleFill {
+      0%, 100% { background: rgba(255, 255, 255, 0.3); }
+      50% { background: rgba(255, 255, 255, 0.6); }
+    }
+
+    @keyframes puzzlePop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* Trivia Preview Animation */
+    .trivia-preview {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .question-popup {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      animation: questionPop 6s infinite;
+    }
+
+    .q1 {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .q2 {
+      top: 50%;
+      right: 10%;
+      animation-delay: 2s;
+    }
+
+    .q3 {
+      bottom: 20%;
+      left: 15%;
+      animation-delay: 4s;
+    }
+
+    @keyframes questionPop {
+      0%, 100% { opacity: 0; transform: scale(0.8) translateY(10px); }
+      10%, 30% { opacity: 1; transform: scale(1) translateY(0); }
+      40% { opacity: 0; transform: scale(0.8) translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🎮 GAME CLUB</div>
+      <nav style="display: flex; gap: 1rem; align-items: center;">
+        <a href="liveGifting.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">⚽ Football</a>
+        <a href="trivia.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">❓ Trivia</a>
+        <a href="puzzle.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🧩 Puzzle</a>
+        <a href="prizes.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏆 Prizes</a>
+        <a href="subscribe.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">💎 Subscribe</a>
+      </nav>
+    </header>
+
+    <!-- Games Grid -->
+    <div class="games-grid">
+      <!-- Football -->
+      <div class="game-card" onclick="window.location.href='liveGifting.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #10b981, #059669); position: relative; overflow: hidden;">
+          <div class="football-preview">
+            <div class="mini-player player-1">⚽</div>
+            <div class="mini-player player-2">👤</div>
+            <div class="mini-ball">⚽</div>
+          </div>
+        </div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Football</h2>
+          <p class="game-description">
+            Play real football matches! Choose teams, pass to players, shoot goals. 12 min halves with realistic gameplay.
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">6</span>
+              <span class="stat-label">Teams</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">24min</span>
+              <span class="stat-label">Match</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">PvAI</span>
+              <span class="stat-label">Mode</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+
+      <!-- Puzzle Challenge -->
+      <div class="game-card" onclick="window.location.href='puzzle.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #f59e0b, #d97706); position: relative; overflow: hidden;">
+          <div class="puzzle-preview">
+            <div class="puzzle-grid">
+              <div class="puzzle-box filled">A</div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box filled">E</div>
+              <div class="puzzle-box empty"></div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box filled">P</div>
+              <div class="puzzle-box empty">_</div>
+              <div class="puzzle-box filled">E</div>
+              <div class="puzzle-box empty"></div>
+            </div>
+          </div>
+        </div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Puzzle Challenge</h2>
+          <p class="game-description">
+            Crossword-style word puzzle! Fill in missing letters to complete words. Progress through 5 levels!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">5</span>
+              <span class="stat-label">Levels</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Grid</span>
+              <span class="stat-label">Layout</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">Hints</span>
+              <span class="stat-label">Available</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+
+      <!-- Trivia Quiz -->
+      <div class="game-card" onclick="window.location.href='trivia.html'">
+        <div class="game-banner" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); position: relative; overflow: hidden;">
+          <div class="trivia-preview">
+            <div class="question-popup q1">What is 2+2?</div>
+            <div class="question-popup q2">Capital of France?</div>
+            <div class="question-popup q3">Largest ocean?</div>
+          </div>
+        </div>
+        <div class="game-content">
+          <span class="game-status status-live">● LIVE</span>
+          <h2 class="game-title">Trivia Challenge</h2>
+          <p class="game-description">
+            Test your knowledge! Couples, Bible, Math & Fun Facts trivia with 5 progressive levels to unlock!
+          </p>
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-value">4</span>
+              <span class="stat-label">Categories</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">5</span>
+              <span class="stat-label">Levels</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">2P</span>
+              <span class="stat-label">Mode</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;">Play Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coming Soon Section -->
+    <div class="coming-soon-section-wrapper">
+      <h2 class="coming-soon-section-title">Coming Soon</h2>
+      <div class="coming-soon-grid-wrapper">
+        <!-- Car Racing -->
+        <div class="game-card coming-soon">
+          <div class="game-content">
+            <div class="coming-soon-icon">🏎️</div>
+            <h2 class="game-title">Car Racing</h2>
+            <span class="game-status status-coming">⏳ SOON</span>
+          </div>
+        </div>
+
+        <!-- Tournaments -->
+        <div class="game-card coming-soon">
+          <div class="game-content">
+            <div class="coming-soon-icon">🏆</div>
+            <h2 class="game-title">Tournaments</h2>
+            <span class="game-status status-coming">⏳ SOON</span>
+          </div>
+        </div>
+
+        <!-- Arcade Games -->
+        <div class="game-card coming-soon">
+          <div class="game-content">
+            <div class="coming-soon-icon">🕹️</div>
+            <h2 class="game-title">Arcade</h2>
+            <span class="game-status status-coming">⏳ SOON</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: #666; font-size: 0.8rem; border-top: 1px solid #333; margin-top: 40px;">
+      <p>&copy; 2026 Game Club. Skill-based gaming platform. Play for fun and prizes!</p>
+      <a href="legal.html" style="color: #888; text-decoration: none; margin: 0 10px;">Terms & Conditions</a>
+      <a href="#" style="color: #888; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+    </footer>
+  </div>
+</body>
+</html>

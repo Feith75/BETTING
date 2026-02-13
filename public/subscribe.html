@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Subscription</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pricing-container {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 300px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .tier-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .coins-badge {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .features-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: var(--accent);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .sub-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-basic {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+
+        .btn-vip {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: black;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            border: 1px solid var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <span class="icon">💎</span>
+                <h1>PREMIUM PASS</h1>
+            </div>
+            <div>
+                <a href="games.html" class="btn-secondary" style="margin-right: 10px;">Games</a>
+                <a href="/" class="btn-secondary">Back to Game</a>
+            </div>
+        </header>
+
+        <div class="pricing-container">
+            <!-- Basic Tier -->
+            <div class="pricing-card">
+                <div class="tier-name">BASIC</div>
+                <div class="price">$5<span>/mo</span></div>
+                <div class="coins-badge">5,000 Coins</div>
+                <ul class="features-list">
+                    <li>Access to Racing Game</li>
+                    <li>Basic Football Markets</li>
+                    <li>Eligible for Weekly Prizes</li>
+                    <li>Standard Support</li>
+                </ul>
+                <button class="sub-btn btn-basic" onclick="subscribe('Basic')">Choose Basic</button>
+            </div>
+
+            <!-- Premium Tier -->
+            <div class="pricing-card featured">
+                <div class="tier-name">PREMIUM</div>
+                <div class="price">$10<span>/mo</span></div>
+                <div class="coins-badge">12,000 Coins</div>
+                <ul class="features-list">
+                    <li>Everything in Basic</li>
+                    <li>Live Football Betting</li>
+                    <li><strong>2.4x Coin Value</strong></li>
+                    <li>Priority Prize Shipping</li>
+                </ul>
+                <button class="sub-btn btn-primary" onclick="subscribe('Premium')">Choose Premium</button>
+            </div>
+
+            <!-- VIP Tier -->
+            <div class="pricing-card">
+                <div class="tier-name">VIP ELITE</div>
+                <div class="price">$25<span>/mo</span></div>
+                <div class="coins-badge">35,000 Coins</div>
+                <ul class="features-list">
+                    <li>Unlimited Access</li>
+                    <li>Exclusive VIP Tournaments</li>
+                    <li><strong>3x Coin Value</strong></li>
+                    <li>Personal Account Manager</li>
+                    <li>Monthly Gift Box</li>
+                </ul>
+                <button class="sub-btn btn-vip" onclick="subscribe('VIP')">Become VIP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Subscription</h2>
+            <p id="modalText" style="margin: 1rem 0; color: #ccc;">You are subscribing to...</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                <button class="btn-primary" onclick="processPayment()">Pay with M-Pesa</button>
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTier = '';
+
+        function subscribe(tier) {
+            selectedTier = tier;
+            document.getElementById('modalText').innerText = `Subscribe to ${tier} Tier?`;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        async function processPayment() {
+            try {
+                const response = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: 1, // Hardcoded for demo
+                        tier: selectedTier,
+                        paymentMethod: 'mpesa'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.message === 'Subscription active') {
+                    alert('🎉 Subscription Successful! Coins added.');
+                    window.location.href = '/';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Payment failed');
+            }
+        }
+    </script>
+</body>
+
+</html>

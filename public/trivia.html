@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Challenge - Racing Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .category-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--bg-dark) 100%);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 40px var(--glow);
+    }
+
+    .category-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .category-card.locked:hover {
+      transform: none;
+      border-color: var(--border);
+      box-shadow: none;
+    }
+
+    .category-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .category-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .category-description {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .question-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .question-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .question-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .answer-option {
+      background: var(--bg-darker);
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .answer-option:hover {
+      border-color: var(--primary);
+      background: var(--surface);
+      transform: translateX(10px);
+    }
+
+    .answer-option.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .answer-option.correct {
+      border-color: #22c55e;
+      background: #22c55e;
+      color: white;
+      animation: correctPulse 0.5s ease;
+    }
+
+    .answer-option.wrong {
+      border-color: #ef4444;
+      background: #ef4444;
+      color: white;
+      animation: wrongShake 0.5s ease;
+    }
+
+    .player-scores {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .player-score-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .player-score-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">❓ TRIVIA CHALLENGE</div>
+      <nav style="display: flex; gap: 1rem; align-items: center;">
+        <a href="/" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem;">🏁 Racing</a>
+        <a href="games.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem;">🎮 Games</a>
+        <div style="background: var(--surface); padding: 0.5rem 1rem; border-radius: 10px; border: 2px solid #fbbf24;">
+          <span style="font-weight: 700; color: #fbbf24;">💰 <span id="player-coins">100</span></span>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Category Selection View -->
+    <section id="category-view" class="view active">
+      <div style="text-align: center; padding: 3rem 2rem 1rem;">
+        <h1 style="font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--secondary)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">Choose Your Category</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Select a trivia category to start playing</p>
+      </div>
+
+      <div class="category-grid" id="category-grid"></div>
+    </section>
+
+    <!-- Game View -->
+    <section id="game-view" class="view">
+      <div style="padding: 2rem; background: var(--surface); border-bottom: 2px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+          <button class="btn btn-secondary" onclick="backToCategories()">← Back</button>
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="category-title">Couples Trivia</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Question <span id="question-number">1</span>/10</div>
+        </div>
+      </div>
+
+      <div class="player-scores">
+        <div class="player-score-card" id="player1-card">
+          <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem;">Player 1</div>
+          <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary);" id="player1-score">0</div>
+        </div>
+        <div class="player-score-card" id="player2-card">
+          <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem;">Player 2</div>
+          <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary);" id="player2-score">0</div>
+        </div>
+      </div>
+
+      <div class="question-container" id="question-container"></div>
+    </section>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="game-over-modal">
+      <div class="game-over-content">
+        <div class="winner-icon" id="winner-icon">🏆</div>
+        <h2 id="winner-text">Player 1 Wins!</h2>
+        <div id="final-scores" style="margin: 2rem 0;"></div>
+        <button class="btn btn-primary" onclick="backToCategories()">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="trivia.js"></script>
+</body>
+</html>

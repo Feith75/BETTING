@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puzzle Challenge - Racing Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .puzzle-container {
+      display: flex;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .player-area {
+      flex: 1;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+    }
+
+    .player-area.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px var(--glow);
+    }
+
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .player-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .player-score {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--success);
+    }
+
+    .puzzle-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      background: var(--bg-darker);
+      padding: 10px;
+      border-radius: 15px;
+      margin-bottom: 1rem;
+      aspect-ratio: 1;
+    }
+
+    .puzzle-cell {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: all 0.2s ease;
+      background: var(--surface-light);
+      border: 2px solid transparent;
+    }
+
+    .puzzle-cell:hover {
+      transform: scale(1.05);
+      border-color: var(--primary);
+    }
+
+    .puzzle-cell.selected {
+      border-color: #ffff00;
+      box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+      transform: scale(1.1);
+    }
+
+    .puzzle-cell.matched {
+      animation: matchPulse 0.5s ease;
+    }
+
+    @keyframes matchPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); opacity: 0.5; }
+    }
+
+    .question-card {
+      background: var(--bg-darker);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 2px solid var(--border);
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .question-category {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .question-number {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .feedback-show {
+      opacity: 1 !important;
+    }
+
+    .word-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 15px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .word-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px var(--glow);
+    }
+
+    .word-clue {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .word-input-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .word-input {
+      flex: 1;
+      padding: 1rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--bg-darker);
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.3rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .word-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--glow);
+    }
+
+    .word-feedback {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      min-height: 30px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .word-feedback.show {
+      opacity: 1;
+    }
+
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-box {
+      background: var(--bg-darker);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .timer {
+      font-size: 2.5rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--primary);
+      margin: 1rem 0;
+    }
+
+    .game-over-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 2rem 1rem;
+    }
+
+    .game-over-modal.active {
+      display: flex;
+    }
+
+    .game-over-content {
+      background: var(--surface);
+      padding: 3rem;
+      border-radius: 20px;
+      text-align: center;
+      border: 2px solid var(--primary);
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      margin: auto;
+    }
+
+    .game-over-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .game-over-content::-webkit-scrollbar-track {
+      background: var(--bg-darker);
+      border-radius: 10px;
+    }
+
+    .game-over-content::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+
+    .game-over-content::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary);
+    }
+
+    .winner-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid-cell {
+      width: 60px;
+      height: 60px;
+      border: 2px solid var(--border);
+      background: var(--bg-darker);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .grid-cell[contenteditable="true"]:focus {
+      outline: none;
+    }
+
+    .grid-cell.blocked {
+      background: var(--bg-darker);
+      border-color: var(--bg-darker);
+      cursor: default;
+    }
+
+    .grid-cell.active {
+      background: white;
+      color: #000;
+      border-color: var(--primary);
+    }
+
+    .grid-cell.active:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    .grid-cell.focused {
+      border-color: var(--secondary);
+      box-shadow: 0 0 15px var(--glow);
+      border-width: 3px;
+    }
+
+    .grid-cell.intersection {
+      background: #fef3c7;
+      color: #000;
+      font-weight: 800;
+      border-color: #fbbf24;
+      border-width: 3px;
+      cursor: default;
+    }
+
+    .grid-cell.hint-letter {
+      background: #dbeafe;
+      color: #1e40af;
+      font-weight: 800;
+      border-color: #3b82f6;
+      cursor: default;
+    }
+
+    .grid-cell.correct {
+      background: #22c55e !important;
+      color: white !important;
+      border-color: #16a34a !important;
+      animation: correctPulse 0.5s ease;
+    }
+
+    .grid-cell.wrong {
+      background: #ef4444 !important;
+      color: white !important;
+      border-color: #dc2626 !important;
+      animation: wrongShake 0.5s ease;
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .cell-label {
+      position: absolute;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .across-label {
+      top: 2px;
+      right: 2px;
+    }
+
+    .down-label {
+      bottom: 2px;
+      left: 2px;
+    }
+
+    .level-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .level-card:not(.locked):hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 30px var(--glow);
+      transform: translateY(-5px);
+    }
+
+    .level-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .level-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .level-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .level-description {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .challenges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🧩 PUZZLE CHALLENGE</div>
+      <nav style="display: flex; gap: 1rem; align-items: center;">
+        <a href="/" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem;">🏁 Racing</a>
+        <a href="games.html" style="color: var(--text); text-decoration: none; padding: 0.5rem 1rem;">🎮 Games</a>
+      </nav>
+    </header>
+
+    <!-- Lobby View -->
+    <section id="lobby-view" class="view active">
+      <div class="lobby-content">
+        <div class="lobby-header">
+          <h1>Puzzle Challenge</h1>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="background: var(--surface); padding: 0.75rem 1.5rem; border-radius: 10px; border: 2px solid #fbbf24;">
+              <span style="font-size: 1.2rem; font-weight: 700; color: #fbbf24;">💰 <span id="lobby-coins">100</span> Coins</span>
+            </div>
+          </div>
+        </div>
+        <div class="challenges-grid" id="puzzle-challenges-grid">
+          <div class="empty-state">
+            <div class="empty-icon">🧩</div>
+            <p>Loading levels...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Game Modal -->
+    <div id="create-puzzle-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Setup Puzzle Game</h2>
+          <button class="close-btn" id="close-puzzle-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Game Duration (seconds)</label>
+            <input type="number" id="game-duration" min="60" max="600" value="180">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancel-puzzle-btn">Cancel</button>
+          <button class="btn btn-primary" id="confirm-puzzle-btn">Create Game</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game View -->
+    <section id="puzzle-game-view" class="view">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: var(--surface); border-bottom: 2px solid var(--border);">
+        <div style="display: flex; gap: 2rem;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">LEVEL</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);" id="current-level">1</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">SCORE</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: var(--success);" id="player-score">0</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">CORRECT</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: var(--text);" id="correct-words">0</div>
+          </div>
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">COINS</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #fbbf24;" id="player-coins">100</div>
+          </div>
+        </div>
+        <div class="timer" id="game-timer" style="margin: 0;">3:00</div>
+      </div>
+      
+      <div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+        <!-- Hints (hidden, shown in grid) -->
+        <div id="hint-boxes" style="display: none;">
+          <div id="across-hint"></div>
+          <div id="down-hint"></div>
+        </div>
+        
+        <!-- Grid -->
+        <div id="word-grid" style="display: grid; gap: 3px; background: var(--bg-darker); padding: 15px; border-radius: 15px; margin: 0 auto 2rem; width: fit-content;"></div>
+        
+        <!-- Controls -->
+        <div style="background: var(--surface); padding: 2rem; border-radius: 15px; border: 2px solid var(--border); text-align: center;">
+          <div style="margin-bottom: 1.5rem;">
+            <p style="color: var(--text-muted); font-size: 1rem;">Click on the boxes to type your answers. Answers check automatically!</p>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
+            <button class="btn btn-secondary" id="hint-btn" style="padding: 1rem 1.5rem;">💡 Hint (3 coins)</button>
+            <button class="btn btn-primary" onclick="document.getElementById('buy-coins-modal').classList.add('active')" style="padding: 1rem 1.5rem; background: linear-gradient(135deg, #fbbf24, #f59e0b);">💰 Buy Coins</button>
+          </div>
+          
+          <div id="feedback-message" style="text-align: center; font-size: 1.1rem; font-weight: 600; min-height: 30px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level Complete Modal -->
+    <div id="level-complete-modal" class="game-over-modal">
+      <div class="game-over-content">
+        <div class="winner-icon">🎊</div>
+        <h2>Level <span id="completed-level">1</span> Complete!</h2>
+        <p style="font-size: 1.5rem; margin: 1rem 0; color: var(--success);">Score: <span id="level-score">0</span></p>
+        <button class="btn btn-primary" onclick="nextLevel()" style="width: 100%; font-size: 1.2rem;">Next Level →</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="game-over-modal">
+      <div class="game-over-content">
+        <div class="winner-icon" id="winner-icon">🏆</div>
+        <h2 id="winner-text">You Won!</h2>
+        <p id="final-score" style="font-size: 1.5rem; margin: 1rem 0;"></p>
+        <button class="btn btn-primary" id="back-to-lobby-btn">Back to Lobby</button>
+      </div>
+    </div>
+
+    <!-- Buy Coins Modal -->
+    <div id="buy-coins-modal" class="game-over-modal">
+      <div class="game-over-content" style="max-width: 500px;">
+        <div class="winner-icon">💰</div>
+        <h2>Buy Coins</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">You need more coins to continue playing. Purchase coins using M-Pesa.</p>
+        
+        <div style="margin-bottom: 2rem;">
+          <label style="display: block; text-align: left; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">M-Pesa Phone Number</label>
+          <input type="tel" id="mpesa-phone" placeholder="0712345678 or 254712345678" style="width: 100%; padding: 1rem; font-size: 1.1rem; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-darker); color: var(--text); text-align: center;">
+        </div>
+        
+        <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+          <button class="btn btn-primary" onclick="initiateMpesaPayment(10, 50)" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            Buy 50 Coins - KSh 10
+          </button>
+          <button class="btn btn-primary" onclick="initiateMpesaPayment(20, 100)" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            Buy 100 Coins - KSh 20
+          </button>
+          <button class="btn btn-primary" onclick="initiateMpesaPayment(50, 250)" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            Buy 250 Coins - KSh 50
+          </button>
+          <button class="btn btn-primary" onclick="initiateMpesaPayment(100, 500)" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+            Buy 500 Coins - KSh 100
+          </button>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="document.getElementById('buy-coins-modal').classList.remove('active')" style="width: 100%;">Cancel</button>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-darker); border-radius: 10px;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+            💡 You'll receive an M-Pesa prompt on your phone. Enter your PIN to complete the payment.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="game-over-modal">
+      <div class="game-over-content" style="max-width: 600px;">
+        <div class="winner-icon">🎓</div>
+        <h2>How to Play</h2>
+        <div style="text-align: left; margin: 2rem 0;">
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">1️⃣ Read the Hints</h3>
+            <p style="color: var(--text-muted);">You'll see two hints like "Starts with P" or "Ends with Y". Think of words that match!</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">2️⃣ Two Words Share a Letter</h3>
+            <p style="color: var(--text-muted);">The yellow box shows the shared letter. One word goes RIGHT (→), another goes DOWN (↓).</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">3️⃣ Click and Type in Boxes</h3>
+            <p style="color: var(--text-muted);">Click on any white box and type letters. Use arrow keys to move between boxes or backspace to delete.</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">4️⃣ Automatic Checking</h3>
+            <p style="color: var(--text-muted);">When you finish typing both words, they check automatically! ✅ Correct = GREEN + 1 coin! ❌ Wrong = RED, boxes clear and try again!</p>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 0.5rem;">5️⃣ Use Hints if Stuck</h3>
+            <p style="color: var(--text-muted);">Hints start at 3 coins and increase by 1 coin every 30 seconds (max 10 coins). Use them wisely!</p>
+          </div>
+          <div style="background: var(--bg-darker); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+            <p style="color: #fbbf24; font-weight: 600; margin: 0;">💰 Earn 1 coin for each correct level! Use coins to buy hints when needed.</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="start-tutorial-btn" style="width: 100%; font-size: 1.2rem;">Got It! Let's Play 🎮</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="puzzle.js"></script>
+</body>
+</html>
