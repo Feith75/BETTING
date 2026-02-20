@@ -1,12 +1,13 @@
 const axios = require('axios');
+require('dotenv').config();
 
 class SportsDataService {
-    constructor(apiKey) {
+    constructor(apiKey = process.env.RAPIDAPI_KEY) {
         this.apiKey = apiKey;
-        this.baseURL = 'https://api-football-v1.p.rapidapi.com/v3';
+        this.baseURL = process.env.RAPIDAPI_FOOTBALL_URL || 
         this.headers = {
             'X-RapidAPI-Key': this.apiKey,
-            'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+            'X-RapidAPI-Host': process.env.RAPIDAPI_FOOTBALL_HOST || 
         };
         this.cache = new Map(); // Cache for API responses
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes

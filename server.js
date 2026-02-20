@@ -1,4 +1,5 @@
 // server.js
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
@@ -18,7 +19,7 @@ const io = new Server(server, {
   }
 });
 
-const PORT = 5500;
+const PORT = process.env.PORT || 5500;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -82,5 +83,5 @@ io.on('connection', (socket) => {
 
 // ================= START SERVER =================
 server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

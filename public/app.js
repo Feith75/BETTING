@@ -1,8 +1,11 @@
 // Main Application Logic
 console.log('app.js loaded');
 
-const socket = io('http://localhost:5500');
-const API_BASE = 'http://localhost:5500';
+const SOCKET_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:5500' 
+  : window.location.origin;
+const socket = io(SOCKET_URL);
+const API_BASE = SOCKET_URL;
 window.socket = socket;
 
 console.log('Socket initialized:', socket);

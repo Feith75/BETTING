@@ -1,5 +1,3 @@
-// Using built-in fetch in Node 18+
-
 async function testRaceAPI() {
     const baseUrl = 'http://localhost:5500/api';
 
